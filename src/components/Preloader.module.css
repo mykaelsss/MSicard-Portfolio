@@ -1,0 +1,63 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--ink-1000);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 1rem;
+  padding: var(--gutter);
+  padding-bottom: calc(var(--gutter) + 1.5rem);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  overflow: hidden;
+}
+.meta > * {
+  display: block;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-2);
+  line-height: 1.1;
+  letter-spacing: var(--track-display);
+  color: var(--vellum);
+}
+
+.role {
+  color: var(--stone-400);
+  font-style: italic;
+}
+
+.count {
+  font-family: var(--font-body);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-size: var(--step-4);
+  line-height: 0.9;
+  letter-spacing: 0.01em;
+  color: var(--stone-600);
+  align-self: end;
+}
+
+.lineTrack {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: var(--gutter);
+  height: 1px;
+  background: var(--rule);
+}
+
+.line {
+  display: block;
+  height: 100%;
+  background: linear-gradient(to right, var(--gilt-deep), var(--gilt));
+  transform: scaleX(0);
+  transform-origin: left;
+}

@@ -1,0 +1,227 @@
+/* ---------- trigger ---------- */
+
+.trigger {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  min-height: 24px;
+  padding: 0.2rem 0.6rem;
+  pointer-events: auto;
+  border: 1px solid transparent;
+  color: var(--stone-300);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.trigger:hover {
+  color: var(--vellum);
+  border-color: var(--rule);
+}
+
+.triggerLabel {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--mark-size);
+  letter-spacing: var(--track-mark);
+}
+
+/* A lozenge rotated a further eighth turn, so it reads as "opens" rather than
+   as the marker used elsewhere. */
+.triggerMark {
+  align-self: center;
+  width: 5px;
+  height: 5px;
+  rotate: 45deg;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  translate: 0 -1px;
+}
+
+/* ---------- sheet ---------- */
+
+/*
+ * Anchored to the foot of the screen, under the control that opens it.
+ *
+ * `pointer-events: auto` is load-bearing: this dialog lives inside the HUD
+ * overlay, which is `pointer-events: none` so the page stays usable beneath
+ * it, and that property inherits. Without this the entire sheet is
+ * click-through and nothing in it can be pressed.
+ */
+.sheet {
+  pointer-events: auto;
+  margin: auto auto 0;
+  padding: 0;
+  border: none;
+  border-top: 1px solid var(--gilt-deep);
+  width: 100%;
+  max-width: 100%;
+  max-height: 88dvh;
+  background: var(--ink-1000);
+  color: var(--fg);
+  overflow: hidden;
+
+  /*
+   * It rises from the edge it is anchored to. A dialog is display:none when
+   * closed and enters the top layer when opened, so both of those have to be
+   * transitioned discretely for the slide to be seen at all: `display` keeps
+   * the box painted for the length of the exit, `overlay` keeps it in the top
+   * layer while that happens. Without them it snaps.
+   */
+  translate: 0 100%;
+  opacity: 0;
+  transition:
+    translate var(--dur) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out),
+    display var(--dur) allow-discrete,
+    overlay var(--dur) allow-discrete;
+}
+.sheet[open] {
+  translate: 0 0;
+  opacity: 1;
+}
+/* The state it animates out of. Must come last: it is no more specific than
+   the rule above and has to win the cascade on the opening frame. */
+@starting-style {
+  .sheet[open] {
+    translate: 0 100%;
+    opacity: 0;
+  }
+}
+
+/* Still in the top layer on the way out, so it must stop taking the taps. */
+.sheet:not([open]) {
+  pointer-events: none;
+}
+
+.sheet::backdrop {
+  background: rgb(8 11 17 / 0);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    display var(--dur) allow-discrete,
+    overlay var(--dur) allow-discrete;
+}
+.sheet[open]::backdrop {
+  background: rgb(8 11 17 / 0.88);
+}
+@starting-style {
+  .sheet[open]::backdrop {
+    background: rgb(8 11 17 / 0);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  max-height: 88dvh;
+  padding-inline: var(--gutter);
+}
+
+.head {
+  flex: none;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Only the list scrolls, so the close button never leaves the thumb. */
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 5vw, 1.75rem);
+  width: 100%;
+  min-height: 48px;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  color: var(--stone-200);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.item:hover {
+  color: var(--vellum);
+}
+
+.label {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-1);
+  letter-spacing: var(--track-display);
+  line-height: 1.15;
+}
+
+.itemHere {
+  color: var(--gilt);
+}
+
+.hereMark {
+  margin-left: auto;
+  width: 5px;
+  height: 5px;
+  rotate: 45deg;
+  background: var(--gilt);
+}
+
+/*
+ * The same three links the top bar carries on a wide screen, kept below the
+ * sections so the sheet still opens onto what it is for.
+ */
+.links {
+  flex: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: clamp(1.25rem, 6vw, 2.5rem);
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--mark-size);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-300);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.link:hover {
+  color: var(--gilt);
+}
+
+.close {
+  flex: none;
+  width: 100%;
+  min-height: 56px;
+  margin-block: 0.9rem;
+  border: 1px solid var(--rule-strong);
+  font-style: italic;
+  font-size: var(--step-0);
+  letter-spacing: var(--track-mark);
+  color: var(--vellum);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.close:hover {
+  color: var(--gilt);
+  border-color: var(--gilt);
+  background: rgb(200 164 78 / 0.08);
+}

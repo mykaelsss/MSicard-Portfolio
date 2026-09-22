@@ -1,0 +1,245 @@
+/*
+ * Field work is a tabbed record rather than a scrolled one: a reader comparing
+ * two posts should not have to travel between them. Below the breakpoint the
+ * tabs are a strip above the panel; above it they stand up into a column
+ * beside it, carrying the same hairline-and-gilt track the HUD rail uses.
+ * The breakpoint is mirrored in Experience.tsx as VERTICAL, which reports the
+ * orientation to assistive technology and sets which arrow keys move between
+ * tabs.
+ */
+.tabs {
+  /* The column echoes the index column of the section head - the same 12vw,
+     the same gutter beside it - so the panel starts on the section title's
+     line rather than on a second, competing left edge. It is given a floor
+     the head does not need, because a company name has to fit where a rule
+     does not; below roughly 1330px that floor wins and the two columns come
+     apart by a few tens of pixels, which is the right way round: a name that
+     has to be read beats a line that only has to be seen. */
+  --tab-col: clamp(10rem, 12vw, 12rem);
+  --tab-gap: clamp(1.5rem, 3vw, 3.5rem);
+
+  display: grid;
+  gap: clamp(2rem, 1.25rem + 3vw, 3rem);
+  align-items: start;
+}
+
+/* ---------- The strip ---------- */
+
+.rail {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+
+/* Hairline under the whole strip, with the selected tab's length of it
+   picked out in gilt. */
+.track {
+  position: absolute;
+  overflow: hidden;
+  background: var(--rule);
+}
+.marker {
+  position: absolute;
+  background: linear-gradient(to right, var(--gilt-deep), var(--gilt));
+  transition:
+    left var(--dur) var(--ease-out),
+    width var(--dur) var(--ease-out),
+    top var(--dur) var(--ease-out),
+    height var(--dur) var(--ease-out);
+}
+
+.tablist {
+  display: flex;
+  min-width: 0;
+}
+
+/*
+ * A tab is the company name and nothing else - no date, no status - so it
+ * earns its weight from the display face and from colour alone. Unselected
+ * tabs sit at stone; the selected one comes up to vellum against its gilt
+ * length of track. The period and the current marker belong to the record,
+ * and are carried by the panel.
+ */
+.tab {
+  display: inline-flex;
+  flex: none;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  letter-spacing: var(--track-display);
+  line-height: 1.2;
+  text-align: left;
+  color: var(--stone-400);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.tab:hover {
+  color: var(--stone-200);
+}
+.tab[aria-selected="true"] {
+  color: var(--vellum);
+}
+
+/* ---------- Horizontal: the strip sits above the panel ---------- */
+
+.tablist {
+  flex-direction: row;
+  gap: clamp(1.25rem, 4vw, 2.25rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 0.9rem;
+}
+.tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+}
+.marker {
+  top: auto;
+  bottom: 0;
+  height: 1px;
+  left: var(--mark-left, 0);
+  width: var(--mark-width, 0);
+}
+
+/* ---------- Vertical: the strip stands up beside the panel ---------- */
+
+@media (min-width: 1000px) {
+  .tabs {
+    grid-template-columns: var(--tab-col) 1fr;
+    gap: var(--tab-gap);
+  }
+
+  .tablist {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .tab {
+    display: block;
+    padding: 0.8rem 1.1rem 0.8rem 0;
+    font-size: var(--step-1);
+  }
+
+  /* The track runs down the right edge of the column, between the names and
+     the panel, so the gilt length reads as the selected name reaching across
+     into its own record. */
+  .track {
+    left: auto;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    height: auto;
+  }
+  .marker {
+    left: auto;
+    right: 0;
+    width: 1px;
+    bottom: auto;
+    top: var(--mark-top, 0);
+    height: var(--mark-height, 0);
+    background: linear-gradient(to bottom, var(--gilt-deep), var(--gilt));
+  }
+}
+
+/* ---------- The panel ---------- */
+
+.panel {
+  min-width: 0;
+}
+/* The panel is focusable so a keyboard reader can move from the tabs into the
+   record; it is not an interactive control, so it takes no focus ring beyond
+   the page default and never suggests it can be pressed. */
+.panel:focus-visible {
+  outline-offset: 6px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 0.9rem;
+}
+/* A date is metadata, not body copy: it sets at the marginalia size. */
+.period {
+  font-size: var(--step--1);
+  color: var(--stone-200);
+  line-height: 1.5;
+}
+.current {
+  display: inline-flex;
+  padding: 0.22rem 0.6rem;
+  border: 1px solid var(--gilt-deep);
+  color: var(--gilt);
+}
+
+.role {
+  font-size: var(--step-2);
+  color: var(--vellum);
+  margin: 0 0 1rem;
+  max-width: 24ch;
+}
+
+.org {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 0 0 clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
+  padding-bottom: clamp(1.25rem, 1rem + 1vw, 2rem);
+  border-bottom: 1px solid var(--rule);
+}
+.orgName {
+  font-size: var(--step-1);
+  color: var(--stone-200);
+}
+/* Set as an aside in the margin rather than as another shouted label. */
+.orgNote,
+.orgLoc {
+  font-style: italic;
+  font-size: var(--step--1);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-400);
+}
+
+.bullets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  max-width: 68ch;
+}
+
+.bullet {
+  display: grid;
+  grid-template-columns: 1.9rem 1fr;
+  gap: 0.5rem;
+  color: var(--stone-200);
+  line-height: 1.66;
+  text-wrap: pretty;
+}
+
+/* The same lozenge as the hero rule, used here as a hanging mark. */
+.bulletMark {
+  width: 4px;
+  height: 4px;
+  background: var(--gilt-deep);
+  rotate: 45deg;
+  margin-top: 0.72em;
+}
+
+@media (max-width: 720px) {
+  .bullet {
+    grid-template-columns: 1.6rem 1fr;
+  }
+}

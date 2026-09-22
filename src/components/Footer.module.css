@@ -1,0 +1,31 @@
+.footer {
+  position: relative;
+  z-index: 1;
+  /* The summit/footer boundary is a section boundary like any other: the
+     footer supplies the half the last section no longer has below it. */
+  padding-block: calc(var(--section-gap) / 2)
+    calc(var(--hud-rail) + clamp(1rem, 2vw, 2rem));
+}
+
+@media (min-width: 861px) {
+  .inner {
+    padding-right: var(--gutter);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  color: var(--stone-500);
+}
+
+@media (max-width: 720px) {
+  .coords {
+    display: none;
+  }
+}

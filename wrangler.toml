@@ -1,0 +1,37 @@
+name = "msicard-portfolio"
+main = "worker/index.ts"
+compatibility_date = "2026-09-15"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+# Unknown paths return index.html so client routing and deep links work.
+not_found_handling = "single-page-application"
+# `dist/resume.pdf` exists as a static asset (the build-time fallback), so the
+# asset router would answer /resume.pdf before the Worker ever ran, bypassing
+# both the R2 override and the Content-Disposition handling. These routes must
+# reach the Worker first.
+run_worker_first = ["/resume.pdf", "/api/*"]
+
+# Live resume + site content. Swap either object to update the site
+# without a redeploy. Create with:
+#   npx wrangler r2 bucket create msicard-portfolio-content
+[[r2_buckets]]
+binding = "CONTENT"
+bucket_name = "msicard-portfolio-content"
+
+# Contact form throttle, keyed on the caller's IP. Turnstile is what stops a
+# bot getting through at all; this is what stops any one caller - solved
+# challenge or not - turning the endpoint into a firehose. The namespace_id is
+# an arbitrary integer, unique within this Worker.
+#
+# The binding is optional at runtime: worker/contact.ts checks for it and
+# simply runs with one layer fewer if it is absent.
+[[ratelimits]]
+name = "CONTACT_RATE_LIMIT"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }

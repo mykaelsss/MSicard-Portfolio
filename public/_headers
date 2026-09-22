@@ -1,0 +1,25 @@
+# Cache policy for the static assets, read by the Workers asset server.
+#
+# Without it every asset is served `max-age=0, must-revalidate`, which puts a
+# conditional request in front of the script and the stylesheet on every
+# repeat visit - a round trip each, before a single byte of the page can be
+# rendered from a cache that already holds the right answer.
+
+# Vite writes the content hash into these filenames, so a given URL can never
+# name different bytes. Nothing here ever needs revalidating.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The two type families. These filenames are not hashed, so the contract is
+# held by hand: replacing a face means giving the file a new name rather than
+# overwriting one of these. Both are also preloaded from index.html.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+# The document is the one thing that must always be checked: it carries the
+# hashed asset names, so a stale copy pins the reader to an old build.
+/
+  Cache-Control: public, max-age=0, must-revalidate

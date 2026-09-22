@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#080b11" />
+
+    <title>Mykael Sicard - Full-Stack Developer</title>
+    <meta
+      name="description"
+      content="Full-stack developer in New York. Production experience owning complex systems end to end, from PostgreSQL schema design and REST APIs to React and Next.js frontends."
+    />
+    <link rel="canonical" href="https://msicard.dev/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://msicard.dev/" />
+    <meta property="og:title" content="Mykael Sicard - Full-Stack Developer" />
+    <meta
+      property="og:description"
+      content="Full-stack developer in New York. Production experience owning complex systems end to end."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!--
+      Both faces are served from this origin; the @font-face rules live in
+      src/styles/fonts.css. These two preloads are the latin subsets, which is
+      everything the copy is written in: started from the document itself, they
+      download in parallel with the stylesheet that will ask for them rather
+      than waiting for it to parse. The latin-ext files are left to be pulled
+      on demand by their unicode-range.
+    -->
+    <link
+      rel="preload"
+      href="/fonts/anton-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/black-ops-one-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- Progressive enhancement: reveal styles only apply once JS is running. -->
+    <script>
+      document.documentElement.classList.add("js");
+
+      /*
+       * Motion preference, resolved before first paint so a reader who has
+       * asked for stillness never sees a frame of movement. A stored choice
+       * from the in-page control wins; otherwise the OS setting decides.
+       * The key is mirrored in src/lib/motion.ts.
+       */
+      (function () {
+        var pref = null;
+        try {
+          pref = localStorage.getItem("msicard:motion");
+        } catch (e) {
+          /* Storage blocked; fall through to the system setting. */
+        }
+        if (pref !== "full" && pref !== "reduced") {
+          pref = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+            ? "reduced"
+            : "full";
+        }
+        document.documentElement.dataset.motion = pref;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

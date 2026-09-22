@@ -1,0 +1,19 @@
+# Copy to `.dev.vars` for `wrangler dev`. Real values are secrets and must go
+# in with `wrangler secret put NAME`, never in wrangler.toml, which is source.
+#
+# `npm run dev` does not read this file and does not need it: the Vite
+# middleware stubs /api/contact and prints the message instead of sending it.
+
+# Turnstile, from the Cloudflare dashboard (Turnstile > Add site).
+# These two are Cloudflare's published test values: the widget always issues a
+# token and the secret always accepts one. Never deploy with them.
+TURNSTILE_SECRET="1x0000000000000000000000000000000AA"
+
+# Resend, from https://resend.com (API Keys). The sending domain has to be
+# verified there first, or every send is rejected.
+RESEND_API_KEY=""
+
+# Where contact mail lands, and the address it is sent from. CONTACT_FROM must
+# be on the domain verified with Resend; CONTACT_TO can be any inbox.
+CONTACT_TO="mykaelsicard04@gmail.com"
+CONTACT_FROM="Portfolio <contact@msicard.dev>"

@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "meta": {
+    "name": "Mykael Sicard",
+    "firstName": "Mykael",
+    "lastName": "Sicard",
+    "role": "Full-Stack Developer",
+    "tagline": "Full-stack developer in New York City, building production systems by day and chasing strange side projects by night.",
+    "location": {
+      "city": "New York",
+      "region": "NY",
+      "country": "USA",
+      "lat": 40.7128,
+      "lon": -74.006,
+      "timezone": "America/New_York"
+    },
+    "status": {
+      "available": true,
+      "label": "Open to opportunities"
+    },
+    "resumeFile": "resume.pdf",
+    "seo": {
+      "title": "Mykael Sicard - Full-Stack Developer",
+      "description": "Full-stack developer in New York. Production experience owning complex systems end to end, from PostgreSQL schema design and REST APIs to React and Next.js frontends.",
+      "url": "https://msicard.dev/"
+    }
+  },
+  "summary": "Hi, I'm Mykael, a full-stack developer in New York City with 2+ years shipping production features across TypeScript, React, Next.js, Python, and PostgreSQL. At a social content platform I owned a compliance system end to end, from schema design to REST APIs and an admin dashboard, and built a monetized messaging system and a tiered subscription architecture. I'm AWS Certified Cloud Practitioner and Microsoft Certified in Azure AI, and I build my own projects end to end too, including Formalytx, an F1 telemetry dashboard built with Next.js and FastAPI. I'm currently looking for my next full-stack or backend role, and outside of work I game and stay active in the gym.",
+  "links": [
+    {
+      "id": "email",
+      "label": "Email",
+      "value": "mykaelsicard04@gmail.com",
+      "href": "mailto:mykaelsicard04@gmail.com"
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn",
+      "value": "linkedin.com/in/mykaelsicard",
+      "href": "https://linkedin.com/in/mykaelsicard"
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "value": "github.com/mykaelsss",
+      "href": "https://github.com/mykaelsss"
+    }
+  ],
+  "experience": [
+    {
+      "id": "cuny",
+      "role": "Teaching Assistant, Full-Stack Development Bootcamp",
+      "org": "Research Foundation CUNY",
+      "orgNote": null,
+      "location": "New York, NY",
+      "start": "2026-06",
+      "end": "2026-08",
+      "current": false,
+      "period": "June 2026 - August 2026",
+      "bullets": [
+        "Acted as project manager for 3 student teams (3-5 members each) through 3-week capstones, assigning tickets and tracking progress, while running standups across all student teams to surface blockers, delivering 100% on-time completion across all led teams.",
+        "Resolved technical issues for a cohort of 28 students across macOS, Windows, WSL, and native Linux, including development environment setup, shell/bash configuration (PATH, aliases, dotfiles), Git/GitHub workflow debugging, and local server troubleshooting, ensuring no student was blocked from completing coursework due to environment issues.",
+        "Diagnosed a cross-environment connectivity issue between Windows-hosted PostgreSQL and WSL-based applications, resolving it by reconfiguring listener bindings and host-based authentication rules, then resolved the issue one-on-one for every affected student and documented the fix in a reusable guide."
+      ]
+    },
+    {
+      "id": "platform",
+      "role": "Full-Stack Developer",
+      "org": "Social Content Platform",
+      "orgNote": "Confidential",
+      "location": null,
+      "start": "2024-04",
+      "end": "2026-01",
+      "current": false,
+      "period": "April 2024 - January 2026",
+      "bullets": [
+        "Owned compliance system end-to-end: age verification, content policy enforcement, PostgreSQL schema design, live data migrations, REST APIs, and an admin dashboard to meet regulatory requirements.",
+        "Architected a tiered subscription system expanding creators from one to 5 priced tiers for a stealth startup in scoped launch, enabling content segmentation across audience budgets.",
+        "Integrated Stream Chat SDK and built a monetized messaging UI enabling dynamic per-user messaging rates and per-media pricing, extending revenue beyond the SDK's native capabilities.",
+        "Migrated the platform from Plyr.js to Video.js, resolving HLS playback failures affecting ~35% of videos and eliminating a critical seek bug that crashed the site under rapid input."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "formalytx",
+      "name": "Formalytx",
+      "tagline": "F1 Telemetry Explorer",
+      "year": "2026",
+      "summary": "An F1 telemetry explorer - browse seasons, sessions, and driver laps, and visualize raw car telemetry.",
+      "overview": [
+        "Formalytx is a Formula 1 telemetry explorer that lets users navigate F1 seasons, events, and sessions - then dive into driver laps and raw car telemetry, all in one place. Pick a year and event, choose a session, select drivers to compare, and plot lap times and telemetry channels like speed, throttle, and brake.",
+        "The frontend is built with Next.js (App Router), React, and TypeScript, styled with Tailwind CSS and shadcn/ui, with ECharts powering the interactive telemetry visualizations and TanStack Query handling data fetching and caching. The backend is a FastAPI service written in Python, sourcing data through the open-source FastF1 library, all containerized with Docker and served behind an nginx reverse proxy.",
+        "As the sole developer, I designed and built the entire stack - from the REST API endpoints serving season schedules, session results, and lap telemetry, to the charting interface that renders thousands of telemetry data points smoothly. This project pushed me to coordinate a multi-service architecture and deliver a fast, polished experience on top of large, real-world datasets.",
+        "As a Formula 1 fan, this project was a true passion build. Combining my love for the sport with full-stack engineering made every part of the process rewarding, and seeing real race data come to life in the explorer is something I'm genuinely proud of."
+      ],
+      "stack": [
+        "Next.js",
+        "React 19",
+        "FastAPI",
+        "Python",
+        "Cloudflare",
+        "Vercel",
+        "Railway"
+      ],
+      "links": {
+        "site": "https://formalytx.com",
+        "github": "https://github.com/mykaelsss/formalytx"
+      }
+    }
+  ],
+  "contact": {
+    "heading": "Still climbing",
+    "invitation": "Open to full-stack roles where I can own the system end to end, not just the part that renders.",
+    "note": "Email is the fastest way to reach me."
+  },
+  "skills": [
+    {
+      "group": "Languages",
+      "items": [
+        {
+          "name": "TypeScript",
+          "since": 2024,
+          "note": "Strict mode everywhere. Types are the design document."
+        },
+        {
+          "name": "JavaScript",
+          "since": 2022
+        },
+        {
+          "name": "Python",
+          "since": 2022,
+          "note": "Services and data work. The language I reach for when the shape of the problem is still moving."
+        },
+        {
+          "name": "Java",
+          "since": 2022
+        },
+        {
+          "name": "HTML5",
+          "since": 2022
+        },
+        {
+          "name": "CSS3",
+          "since": 2022
+        }
+      ]
+    },
+    {
+      "group": "Frontend",
+      "items": [
+        {
+          "name": "React",
+          "since": 2023,
+          "note": "Server components first. Client state only where a user can change it."
+        },
+        {
+          "name": "Next.js",
+          "since": 2024,
+          "note": "App router in production since 2024."
+        },
+        {
+          "name": "tRPC",
+          "since": 2025
+        },
+        {
+          "name": "React Query (TanStack Query)",
+          "since": 2025
+        },
+        {
+          "name": "Tailwind CSS",
+          "since": 2024
+        },
+        {
+          "name": "Material UI",
+          "since": 2023
+        },
+        {
+          "name": "Bootstrap",
+          "since": 2022
+        }
+      ]
+    },
+    {
+      "group": "Backend",
+      "items": [
+        {
+          "name": "Node.js",
+          "since": 2023
+        },
+        {
+          "name": "Express",
+          "since": 2023
+        },
+        {
+          "name": "FastAPI",
+          "since": 2025,
+          "note": "Pydantic models as the contract between the service and its callers."
+        },
+        {
+          "name": "Flask",
+          "since": 2023
+        },
+        {
+          "name": "Encore",
+          "since": 2026
+        },
+        {
+          "name": "REST APIs",
+          "since": 2023,
+          "note": "Owned end to end on two production platforms."
+        }
+      ]
+    },
+    {
+      "group": "Data",
+      "items": [
+        {
+          "name": "PostgreSQL",
+          "since": 2024,
+          "note": "Schema design and query tuning, not just an ORM target."
+        },
+        {
+          "name": "Prisma",
+          "since": 2024
+        },
+        {
+          "name": "MySQL",
+          "since": 2022
+        },
+        {
+          "name": "MongoDB",
+          "since": 2023
+        },
+        {
+          "name": "Redis",
+          "since": 2025
+        }
+      ]
+    },
+    {
+      "group": "Tools & DevOps",
+      "items": [
+        {
+          "name": "Git/GitHub",
+          "since": 2022
+        },
+        {
+          "name": "Docker",
+          "since": 2024,
+          "note": "Parity between my machine and the one that runs it."
+        },
+        {
+          "name": "AWS (EC2, S3, Lambda)",
+          "since": 2026
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "id": "bmcc",
+      "school": "Borough of Manhattan Community College",
+      "credential": "Associate of Science in Computer Science",
+      "location": "New York, NY"
+    },
+    {
+      "id": "codingdojo",
+      "school": "Coding Dojo",
+      "credential": "Full-Stack Development Certificate (Python, Java, MERN Stack)",
+      "location": null
+    }
+  ],
+  "certifications": [
+    {
+      "id": "aws-clf-c02",
+      "name": "AWS Certified Cloud Practitioner",
+      "code": "CLF-C02",
+      "issuer": "Amazon Web Services",
+      "date": "April 2026",
+      "verify": "https://cp.certmetrics.com/amazon/en/public/verify/credential/fbbcf296048a4a4ba765503510456d69"
+    },
+    {
+      "id": "azure-ai-200",
+      "name": "Microsoft Certified: Azure AI Cloud Developer Associate",
+      "code": "AI-200",
+      "issuer": "Microsoft",
+      "date": "September 2026",
+      "verify": "https://learn.microsoft.com/api/credentials/share/en-us/MykaelSicard-6339/C1D586CEC9EC699A?sharingId=FE0E20C848F1E529"
+    }
+  ]
+}

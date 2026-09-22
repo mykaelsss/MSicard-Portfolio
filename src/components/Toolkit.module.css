@@ -1,0 +1,435 @@
+.rack {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 0.7rem + 1.2vw, 1.6rem);
+}
+
+/*
+ * The line across the head of the rack, carrying the totals. The rack it is
+ * modelled on opens with the state of the economy before any cell is read,
+ * and the counts do that job here: they frame the grid as an inventory rather
+ * than as a list of words. Set as marginalia, not as a dot-joined meta strip.
+ */
+.manifest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.5rem;
+  margin: 0;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--mark-size);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-300);
+}
+
+.manifestFig {
+  font-style: normal;
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--gilt);
+}
+
+.manifestSep {
+  width: 0.9rem;
+  height: 1px;
+  margin: 0 0.15rem;
+  background: var(--stone-500);
+}
+
+/*
+ * The grid and the panel stand side by side, the panel narrow. A full-width
+ * panel under the grid gives a handful of figures the whole measure to sit in
+ * and reads as empty however much is in it; a rail sized to its content does
+ * not. Below the breakpoint the panel drops under the grid, which hands the
+ * grid the width its tracks need.
+ */
+.body {
+  display: grid;
+  grid-template-columns: 1fr minmax(17rem, 20rem);
+  gap: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+  align-items: start;
+}
+
+/*
+ * One column per category, every category on one row. The rack this is drawn
+ * from never wraps, and it cannot afford to: the columns are ragged at the
+ * foot because the categories are uneven, so a wrapped row starts below the
+ * tallest column above it and opens a hole the width of the section.
+ *
+ * So the track count is the group count, published by the component as
+ * `--groups`, and the tracks floor at zero rather than at a width that would
+ * force a wrap. Adding or merging a category stays a content change.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--groups, 5), minmax(0, 1fr));
+  gap: clamp(0.4rem, 0.8vw, 0.7rem);
+  align-items: start;
+  min-width: 0;
+}
+.grid:focus {
+  outline: none;
+}
+.grid:focus-visible {
+  outline: 2px solid var(--gilt);
+  outline-offset: 6px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.columnHead {
+  margin: 0 0 0.35rem;
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+  background: rgb(200 164 78 / 0.15);
+  border-bottom: 1px solid var(--gilt-deep);
+  color: var(--gilt);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+/*
+ * Three anchored zones, as on the rack this is drawn from: the marks at the
+ * head, the name at the foot, the figure in the corner opposite. The figure
+ * is the year the entry entered the kit and is what makes the grid scannable
+ * without opening anything.
+ */
+.cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 3.9rem;
+  padding: 1.25rem 0.55rem 0.5rem;
+  border: 1px solid var(--rule);
+  background: rgb(233 226 211 / 0.02);
+  color: var(--stone-200);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.cell:hover {
+  border-color: var(--gilt-deep);
+  background: rgb(233 226 211 / 0.05);
+  color: var(--vellum);
+}
+
+.cellName {
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  word-break: break-word;
+  min-width: 0;
+}
+
+/*
+ * Gilt and tabular, on its own line at the foot of the cell. Set beside the
+ * name it survives "Java" and loses to "React Query (TanStack Query)" in a
+ * narrow column; given its own row every cell in the rack ends the same way,
+ * and the figures line up down the column as figures should.
+ */
+.cellYear {
+  align-self: flex-end;
+  margin-top: 0.3rem;
+  font-size: var(--step--2);
+  line-height: 1;
+  color: var(--gilt-deep);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.cell:hover .cellYear {
+  color: var(--gilt);
+}
+
+/* The selected entry is the one the panel is describing. */
+.cellOn {
+  background: var(--gilt);
+  border-color: var(--gilt);
+  color: var(--ink-1000);
+}
+.cellOn:hover {
+  background: var(--gilt-soft);
+  border-color: var(--gilt-soft);
+  color: var(--ink-1000);
+}
+.cellOn .cellYear,
+.cellOn:hover .cellYear {
+  color: rgb(8 11 17 / 0.7);
+}
+
+/* ---------- folded: the category strip ---------- */
+
+.folded {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+/*
+ * The categories as a block of tabs, every one of them in sight.
+ *
+ * Five names in a wide stencilled face do not fit across a phone, and the two
+ * ways out of that are scrolling the strip sideways or letting it wrap. It
+ * wraps: a strip exists to show what the rack holds, and one that hides four
+ * fifths of its own labels off the right edge cannot do that. The tracks are
+ * even and the rows are flush, so two rows read as deliberate rather than as
+ * an overflow.
+ *
+ * The track floor clears "Languages" set solid: the longest category name is
+ * a single word in a wide face and cannot be broken, so a narrower track
+ * would not wrap it, it would spill it.
+ */
+.strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 2px;
+}
+
+/*
+ * A tab is a column head that can be pressed, and it is lit the way a chosen
+ * cell is lit: the rack only has the one way of saying "this one".
+ */
+.tab {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.7rem;
+  text-align: center;
+  background: rgb(200 164 78 / 0.15);
+  border: 1px solid transparent;
+  border-bottom-color: var(--gilt-deep);
+  color: var(--stone-300);
+  font-size: var(--step--2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  text-wrap: balance;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.tab:hover {
+  color: var(--vellum);
+}
+.tab[aria-selected="true"] {
+  background: var(--gilt);
+  border-color: var(--gilt);
+  color: var(--ink-1000);
+}
+
+/* How much is behind the tab, which is the one thing a category name does
+   not say on its own. */
+.tabCount {
+  font-size: var(--step--2);
+  color: var(--gilt-deep);
+}
+.tab[aria-selected="true"] .tabCount {
+  color: rgb(8 11 17 / 0.7);
+}
+
+/* ---------- panel ---------- */
+
+.panel {
+  border: 1px solid var(--rule);
+  background: rgb(8 11 17 / 0.5);
+  position: sticky;
+  top: calc(var(--hud-rail) + 2rem);
+}
+
+.panelHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  margin: 0;
+  padding: 0.7rem 1rem;
+  background: rgb(200 164 78 / 0.15);
+  border-bottom: 1px solid var(--gilt-deep);
+}
+
+/* Large enough for the display face, which has a size floor. */
+.panelName {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-1);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--vellum);
+  min-width: 0;
+  word-break: break-word;
+}
+
+.panelGroup {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: var(--step--2);
+  letter-spacing: var(--track-mark);
+  color: var(--gilt);
+}
+
+/* ---------- the service reading ---------- */
+
+/*
+ * One tile, the full width of the rail. It used to share the row with a
+ * deployment count drawn from the same field the "shipped in" list came from,
+ * and keeping that field current meant revisiting the kit every time a
+ * project landed. The reading left is the one the content maintains itself.
+ */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem 1rem;
+  background: var(--ink-900);
+}
+
+.statLabel {
+  margin: 0;
+  font-size: var(--step--2);
+  color: var(--stone-400);
+}
+
+.statValue {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28rem;
+  margin: 0;
+  font-size: var(--step-2);
+  line-height: 1;
+  color: var(--vellum);
+}
+
+.statUnit {
+  font-size: var(--step--2);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-400);
+}
+
+.statSince {
+  margin: 0;
+  font-size: var(--step--2);
+  color: var(--stone-500);
+}
+
+/*
+ * Years in service drawn against the longest-held entry in the kit. The bar
+ * is what turns the figure above it into a measurement: it says where this
+ * entry sits among its neighbours, which a number on its own cannot.
+ */
+.bar {
+  display: block;
+  position: relative;
+  height: 3px;
+  margin-top: 0.45rem;
+  background: rgb(233 226 211 / 0.1);
+}
+.bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--fill, 0%);
+  background: var(--gilt);
+  transition: width var(--dur) var(--ease-out);
+}
+
+/* ---------- blocks ---------- */
+
+/* Ruled at the head rather than the foot, so a panel that ends on the service
+   reading does not trail a line across nothing. */
+.block {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--rule);
+}
+
+.blockLabel {
+  margin: 0 0 0.45rem;
+  font-size: var(--step--2);
+  color: var(--stone-400);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.list li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: var(--step--1);
+  line-height: 1.35;
+  color: var(--vellum);
+}
+.list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.55rem;
+  height: 1px;
+  background: var(--gilt);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: var(--stone-200);
+}
+
+/*
+ * The rail is given up before the grid is. Standing beside the grid it costs
+ * about 20rem, and that is the difference between tracks a name can sit in
+ * and tracks it has to be broken across, so below this the panel drops under
+ * the grid and the whole measure goes to the rack.
+ */
+@media (max-width: 1200px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    position: static;
+  }
+}
+
+/*
+ * Narrower than this, five tracks stop being columns and start being creases,
+ * and stacking them instead turns the rack into a screen and a half of
+ * scrolling. So the categories fold into a strip and one is drawn at a time.
+ * Kept in step with TABBED in Toolkit.tsx, which switches the roles.
+ */
+@media (max-width: 800px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* The one open category flows its entries across the full width rather than
+     down a single file, so a category of seven is still one screen. */
+  .column {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8.5rem), 1fr));
+    gap: 2px;
+  }
+
+  .cell {
+    min-height: 3.4rem;
+  }
+}

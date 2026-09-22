@@ -1,0 +1,348 @@
+/*
+ * The form sits in the infield of a circuit. There is no panel behind it: the
+ * track is the border, drawn as SVG rather than as a box, because a border
+ * cannot have a chicane in it. Geometry is generated in src/lib/circuit.ts
+ * from the measured size, so the corners stay circular as the box grows.
+ */
+.circuit {
+  position: relative;
+  width: min(100%, 44rem);
+}
+
+.track {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* The border, not a control. Every click belongs to what is inside it. */
+  pointer-events: none;
+  overflow: visible;
+}
+
+.track path {
+  fill: none;
+  stroke-linejoin: round;
+}
+
+/*
+ * The boundary lines. This is stroked wider than the tarmac and sits directly
+ * under it, so all that stays visible is a hairline down each side of the
+ * road - the two white lines that make a stroke read as a surface with edges
+ * rather than as a border.
+ */
+.edge {
+  stroke: var(--stone-400);
+  stroke-linecap: round;
+  transition: stroke var(--dur) var(--ease-out);
+}
+
+/* The tarmac. Lighter than the page behind it, and only just. */
+.surface {
+  stroke: var(--ink-800);
+  stroke-linecap: round;
+}
+
+/* Broken line down the middle of it. */
+.centre {
+  stroke: var(--stone-500);
+  stroke-dasharray: 10 16;
+  stroke-linecap: butt;
+}
+
+/*
+ * Curbing on the two sweepers and the chicane. Struck wider than the surface
+ * and painted underneath it, so the dashes show along both edges of the
+ * corner rather than on top of the tarmac. Square caps: a rounded dash reads
+ * as a bead, not a kerb stone.
+ */
+.curb {
+  stroke: var(--gilt-deep);
+  stroke-dasharray: 7 7;
+  stroke-linecap: butt;
+  transition: stroke var(--dur) var(--ease-out);
+}
+
+/* Start/finish. */
+.start {
+  stroke: var(--vellum);
+  stroke-linecap: butt;
+  opacity: 0.75;
+}
+
+/* The track lights up as a unit when anything inside it is in use. */
+.circuit:hover .edge,
+.circuit:focus-within .edge {
+  stroke: var(--stone-200);
+}
+.circuit:hover .curb,
+.circuit:focus-within .curb {
+  stroke: var(--gilt);
+}
+
+/*
+ * Clearance from the track. Deeper at the top because the chicane dips into
+ * the box there, and generous all round because the sweepers cut across the
+ * corners - inside a circuit the usable rectangle is smaller than the box.
+ */
+.infield {
+  position: relative;
+  padding: clamp(2.4rem, 1.8rem + 2.6vw, 3.6rem)
+    clamp(1.7rem, 1.2rem + 2.2vw, 2.9rem)
+    clamp(1.9rem, 1.4rem + 2.2vw, 2.9rem);
+}
+
+/* ---------- the opener ---------- */
+
+.opener {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 44px;
+  text-align: left;
+  color: var(--vellum);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.opener:hover:not(:disabled) {
+  color: var(--gilt);
+}
+.opener:disabled {
+  cursor: default;
+  color: var(--gilt);
+}
+
+.openerLabel {
+  font-size: var(--step-1);
+  letter-spacing: var(--track-mark);
+}
+
+.chevron {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  rotate: 45deg;
+  translate: 0 -3px;
+  transition:
+    rotate var(--dur-fast) var(--ease-out),
+    translate var(--dur-fast) var(--ease-out);
+}
+.opener[aria-expanded="true"] .chevron {
+  rotate: 225deg;
+  translate: 0 3px;
+}
+
+/* ---------- the collapse ---------- */
+
+/*
+ * Height is animated by transitioning the grid track from 0fr to 1fr, which
+ * gets at the real content height without measuring it in JavaScript. The
+ * inner element owns the overflow, because the outer one is the grid.
+ */
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease-out);
+}
+.panel[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.panelInner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.form,
+.sent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  /* Inside the collapsed track this has to be part of the animated height,
+     so it is padding here rather than a gap on the grid. */
+  padding-top: 1.6rem;
+}
+
+/* ---------- fields ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.label {
+  color: var(--stone-300);
+}
+
+/*
+ * Body face at the marginalia size. The display face is drawn for headlines
+ * and would make an entered address unreadable at the exact moment it has to
+ * be checked character by character.
+ */
+.input {
+  font-family: var(--font-body);
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--vellum);
+  background: rgb(8 11 17 / 0.72);
+  border: 1px solid var(--rule-strong);
+  border-radius: 0;
+  padding: 0.7rem 0.85rem;
+  width: 100%;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.input::placeholder {
+  color: var(--stone-500);
+}
+.input:hover {
+  border-color: var(--stone-400);
+}
+.input:focus-visible {
+  outline: 2px solid var(--gilt);
+  outline-offset: 2px;
+  border-color: var(--gilt-deep);
+}
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Colour alone never carries this: the message text names the field too. */
+.input[aria-invalid="true"] {
+  border-color: var(--gilt);
+  background: rgb(200 164 78 / 0.06);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+/*
+ * The honeypot. Removed from the page without `display: none` or
+ * `visibility: hidden`, both of which the better scrapers check for before
+ * deciding whether a field is worth filling.
+ */
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.check {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Turnstile renders a fixed-size iframe. Reserving the height keeps the
+   button from jumping up the page when the widget finishes loading. */
+.widget {
+  min-height: 65px;
+}
+
+/*
+ * That iframe is a flat 300px and will not reflow, which is wider than the
+ * infield once the track and its padding are taken off a phone screen. It has
+ * to be scaled rather than allowed to overflow: the alternative is a widget
+ * with its right-hand edge under the tarmac.
+ */
+@media (max-width: 480px) {
+  .widget {
+    transform: scale(0.78);
+    transform-origin: left top;
+    min-height: 52px;
+  }
+}
+
+.captchaNote {
+  color: var(--stone-300);
+  margin: 0;
+  max-width: 44ch;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.9rem;
+  padding-top: 0.35rem;
+}
+
+/* The same plate as the resume button, since it is the same weight of act. */
+.send {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: var(--step-0);
+  letter-spacing: var(--track-mark);
+  color: var(--ink-1000);
+  background: var(--gilt);
+  border: 1px solid var(--gilt);
+  padding: 0.7rem 1.35rem;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.send:hover:not(:disabled) {
+  background: var(--gilt-soft);
+  border-color: var(--gilt-soft);
+}
+/*
+ * Held shut until the challenge is solved. Kept legible rather than faded
+ * out, because a disabled control that cannot be read cannot explain itself -
+ * the hint beside it says what is missing.
+ */
+.send:disabled {
+  color: var(--stone-300);
+  background: transparent;
+  border-color: var(--rule-strong);
+  cursor: not-allowed;
+}
+
+.hint {
+  color: var(--stone-400);
+}
+
+/*
+ * Always in the DOM, empty when there is nothing to say. A live region that
+ * is added to the page at the moment it gets its text is frequently missed by
+ * screen readers; one that is already there and changes is announced.
+ */
+.status {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.55;
+  color: var(--gilt-soft);
+}
+.status:empty {
+  display: none;
+}
+
+.statusLink {
+  color: var(--gilt);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sentHead {
+  margin: 0;
+  font-size: var(--step-1);
+  color: var(--gilt);
+}
+.sentBody {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  color: var(--stone-200);
+  max-width: 46ch;
+}

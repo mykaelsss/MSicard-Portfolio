@@ -1,0 +1,113 @@
+/*
+ * The Register - ink, stone, and gilt.
+ *
+ * The page is a record of a climb. Cut capitals for what is inscribed, a
+ * book face for what is written, gilt for the one thing carrying light.
+ * Nothing here is pure black or pure white: the ground is cold slate, the
+ * type is aged paper. The status colour is reserved for live state and is
+ * never used decoratively.
+ */
+:root {
+  /* Ink - the night ground, coldest first */
+  --ink-1000: #080b11;
+  --ink-900: #0c1017;
+  --ink-850: #11151e;
+  --ink-800: #161b25;
+  --ink-750: #1c222d;
+  --ink-700: #232a36;
+
+  /* Stone - mist, rules, receding ranges */
+  --stone-600: #2f3745;
+  --stone-500: #424b5a;
+  --stone-400: #5a6473;
+  --stone-300: #828b99;
+  --stone-200: #adb4bf;
+
+  /* Vellum - aged paper, never #fff */
+  --vellum: #e9e2d3;
+  --vellum-dim: #a8a293;
+
+  /* Gilt - leaf on a dark ground, the only light source */
+  --gilt: #c8a44e;
+  --gilt-soft: #e0c483;
+  --gilt-deep: #8a6b24;
+  --gilt-wash: rgb(200 164 78 / 0.14);
+
+  /* Live status only */
+  --gain: #6f9e8a;
+
+  /* Semantic */
+  --bg: var(--ink-1000);
+  --fg: var(--vellum);
+  --fg-muted: var(--stone-300);
+  --rule: rgb(233 226 211 / 0.12);
+  --rule-strong: rgb(233 226 211 / 0.24);
+
+  /* Type - two families, three voices */
+  /*
+   * Contrast by width, not by weight. Neither face has a weight range, so
+   * the heading/body distinction has to come from proportion: Anton is
+   * condensed and vertical, Black Ops One is wide and stencilled. Set side
+   * by side they never read as the same voice.
+   */
+  --font-display: "Anton", "Haettenschweiler", "Arial Narrow Bold", Impact,
+    sans-serif;
+  --font-body: "Black Ops One", "Arial Black", Impact, sans-serif;
+
+  /*
+   * A condensed face is already tight, and opening it up is exactly what
+   * makes condensed type look accidental. Near zero at display sizes, a hair
+   * of air at the small end where the counters start to close.
+   */
+  --track-colossal: -0.005em;
+  --track-display: 0.008em;
+  --track-mark: 0.02em;
+
+  /*
+   * Fluid scale - 360px to 1600px viewport. Still carries the ~12% lift a
+   * book face needed. Both faces here have a large x-height and do not, so
+   * the body steps currently run visually large.
+   */
+  --step--2: clamp(0.8rem, 0.77rem + 0.14vw, 0.88rem);
+  --step--1: clamp(0.92rem, 0.87rem + 0.22vw, 1.05rem);
+  --step-0: clamp(1.08rem, 1.01rem + 0.3vw, 1.24rem);
+  --step-1: clamp(1.3rem, 1.18rem + 0.52vw, 1.62rem);
+  --step-2: clamp(1.62rem, 1.38rem + 1.02vw, 2.3rem);
+  --step-3: clamp(2rem, 1.55rem + 1.95vw, 3.3rem);
+  --step-4: clamp(2.5rem, 1.75rem + 3.2vw, 4.6rem);
+  --step-5: clamp(3.2rem, 1.8rem + 6vw, 7rem);
+  --step-6: clamp(4rem, 0.8rem + 14vw, 13rem);
+
+  /* Marginalia - the scribe's voice in the margin */
+  --mark-size: var(--step--1);
+
+  /* Rhythm */
+  --gutter: clamp(1.25rem, 0.8rem + 2.2vw, 3.5rem);
+  /*
+   * The measure between two sections, not the padding on one side of one.
+   * Each section contributes half, so a boundary is exactly one gap however
+   * many sections meet at it. Held as a per-side padding this stacked into
+   * two, which at desktop width put half a viewport of nothing between the
+   * end of one section and the next heading.
+   *
+   * Keyed to viewport height as well as width: the gap has to read as a
+   * pause the eye can cross, and that is a fraction of the screen, not of
+   * the page width. Tied to width alone it grew on wide monitors, which is
+   * where vertical room is scarcest.
+   */
+  --section-gap: clamp(5.5rem, 3rem + 4vw + 3vh, 10rem);
+  --measure: 66ch;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 220ms;
+  --dur: 480ms;
+  --dur-slow: 900ms;
+
+  /* Layout */
+  --hud-rail: clamp(2.5rem, 2rem + 1.6vw, 3.5rem);
+  --max-w: 84rem;
+
+  color-scheme: dark;
+}

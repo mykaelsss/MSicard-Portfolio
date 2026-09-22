@@ -1,0 +1,254 @@
+/* ---------- trigger ---------- */
+
+/*
+ * The one gilt thing in the section. Gilt is the page's only light source and
+ * is spent on a single element per view; here it is the affordance a reader
+ * has to discover, since the two links beside it are conventional and read as
+ * links whatever they are wearing. No arrow: the neighbours carry ↗ because
+ * they genuinely leave the site, and this does not.
+ */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 1.15rem;
+  border: 1px solid var(--gilt);
+  background: var(--gilt-wash);
+  color: var(--gilt-soft);
+  font-size: var(--step-0);
+  letter-spacing: var(--track-mark);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.trigger:hover {
+  background: var(--gilt);
+  color: var(--ink-1000);
+}
+
+/* ---------- dossier ---------- */
+
+/*
+ * A panel on a wide screen, a sheet risen from the bottom edge on a phone.
+ * Both stop short of the viewport so there is always backdrop to dismiss on.
+ */
+.dossier {
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-top: 1px solid var(--gilt-deep);
+  width: min(58rem, 100% - 2 * var(--gutter));
+  max-width: none;
+  max-height: min(84dvh, 52rem);
+  background: var(--ink-900);
+  color: var(--fg);
+  overflow: hidden;
+
+  /*
+   * A dialog is display:none when closed and enters the top layer when
+   * opened, so both have to be transitioned discretely for the entrance to be
+   * seen at all: `display` keeps the box painted for the length of the exit,
+   * `overlay` keeps it in the top layer while that happens.
+   */
+  translate: 0 12px;
+  opacity: 0;
+  transition:
+    translate var(--dur) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out),
+    display var(--dur) allow-discrete,
+    overlay var(--dur) allow-discrete;
+}
+.dossier[open] {
+  translate: 0 0;
+  opacity: 1;
+}
+/* The state it animates out of. Must come last: no more specific than the
+   rule above, so it has to win the cascade on the opening frame. */
+@starting-style {
+  .dossier[open] {
+    translate: 0 12px;
+    opacity: 0;
+  }
+}
+
+/* Still in the top layer on the way out, so it must stop taking the clicks. */
+.dossier:not([open]) {
+  pointer-events: none;
+}
+
+/* Heavier than the contents sheet: this one is read, not glanced at, and the
+   moving canvas behind it would otherwise pull at the eye the whole time. */
+.dossier::backdrop {
+  background: rgb(8 11 17 / 0);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    display var(--dur) allow-discrete,
+    overlay var(--dur) allow-discrete;
+}
+.dossier[open]::backdrop {
+  background: rgb(8 11 17 / 0.96);
+}
+@starting-style {
+  .dossier[open]::backdrop {
+    background: rgb(8 11 17 / 0);
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  max-height: min(84dvh, 52rem);
+}
+
+/* ---------- head ---------- */
+
+.head {
+  position: relative;
+  flex: none;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.25rem) var(--dossier-x)
+    clamp(1rem, 0.75rem + 1vw, 1.4rem);
+  border-bottom: 1px solid var(--rule);
+}
+/* The same ember tick that opens a card in the list, so the panel reads as
+   the same entry lifted off the page rather than as a different object. */
+.head::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: clamp(3rem, 8vw, 6rem);
+  height: 1px;
+  background: var(--gilt);
+}
+
+.headLine {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--step-2);
+  color: var(--vellum);
+}
+
+.year {
+  flex: none;
+  font-size: var(--step--1);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-500);
+}
+
+.tagline {
+  margin-top: 0.5rem;
+  color: var(--gilt);
+}
+
+/* ---------- body ---------- */
+
+/* Only the prose scrolls, so neither the entry's name nor its links ever
+   leave the screen. */
+.scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.body {
+  padding: clamp(1.5rem, 1rem + 2vw, 2.25rem) var(--dossier-x);
+}
+
+/*
+ * The only sustained read on the site, and the body face is a stencil: it
+ * carries a sentence well and punishes a reader over four paragraphs. A step
+ * down in size, a shorter measure and more leading is what makes a heavy face
+ * legible at length.
+ */
+.para {
+  max-width: 62ch;
+  color: var(--stone-200);
+  font-size: var(--step-0);
+  line-height: 1.78;
+  text-wrap: pretty;
+}
+.para + .para {
+  margin-top: 1.25em;
+}
+
+/* ---------- foot ---------- */
+
+.foot {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem clamp(1rem, 3vw, 2rem);
+  padding: clamp(0.9rem, 0.7rem + 0.8vw, 1.25rem) var(--dossier-x);
+  border-top: 1px solid var(--rule);
+  background: var(--ink-850);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.5rem;
+}
+
+.link,
+.close {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  font-size: var(--step--1);
+  letter-spacing: var(--track-mark);
+  color: var(--stone-200);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.link:hover,
+.close:hover {
+  color: var(--gilt);
+}
+
+.close {
+  margin-left: auto;
+  padding-inline: 1.1rem;
+  border: 1px solid var(--rule-strong);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.close:hover {
+  border-color: var(--gilt);
+}
+
+/* ---------- narrow ---------- */
+
+.dossier {
+  --dossier-x: clamp(1.25rem, 0.9rem + 1.8vw, 2.5rem);
+}
+
+@media (max-width: 640px) {
+  /* Risen from the bottom edge, where the thumb already is, with the last
+     slice of screen left as backdrop to dismiss on. */
+  .dossier {
+    margin: auto auto 0;
+    width: 100%;
+    max-height: 88dvh;
+    border-inline: none;
+    border-bottom: none;
+    translate: 0 100%;
+  }
+  .inner {
+    max-height: 88dvh;
+  }
+  @starting-style {
+    .dossier[open] {
+      translate: 0 100%;
+    }
+  }
+}

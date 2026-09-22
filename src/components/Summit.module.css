@@ -1,0 +1,132 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1.75rem, 1rem + 2.5vw, 3rem);
+}
+
+/* A sentence, so it keeps the book face; only its scale is raised. */
+.invitation {
+  margin: 0;
+  font-size: var(--step-2);
+  font-style: italic;
+  line-height: 1.4;
+  max-width: 30ch;
+  color: var(--vellum);
+  text-wrap: pretty;
+  text-shadow: 0 2px 30px rgb(8 11 17 / 0.8);
+}
+
+.email {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 100%;
+}
+
+/* An address is read letter by letter, so it stays in the book face where
+   the digits and the @ keep their normal shapes. */
+.emailText {
+  font-size: clamp(1.4rem, 0.8rem + 2.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: 0.005em;
+  color: var(--vellum);
+  word-break: break-word;
+  transition: color var(--dur) var(--ease-out);
+}
+
+.emailRule {
+  height: 1px;
+  background: var(--rule-strong);
+  transform-origin: left;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.email:hover .emailText {
+  color: var(--gilt);
+}
+.email:hover .emailRule {
+  background: var(--gilt);
+}
+
+.note {
+  color: var(--stone-200);
+  font-size: var(--step-0);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-size: var(--step-0);
+  letter-spacing: var(--track-mark);
+  color: var(--vellum);
+  padding: 0.7rem 1.35rem;
+  border: 1px solid var(--rule-strong);
+  background: rgb(8 11 17 / 0.5);
+  backdrop-filter: blur(6px);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.action:hover {
+  color: var(--gilt);
+  border-color: var(--gilt);
+  background: rgb(200 164 78 / 0.12);
+}
+
+.primary {
+  color: var(--ink-1000);
+  background: var(--gilt);
+  border-color: var(--gilt);
+}
+.primary:hover {
+  color: var(--ink-1000);
+  background: var(--gilt-soft);
+  border-color: var(--gilt-soft);
+}
+
+.links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 4vw, 3.5rem);
+  padding-top: clamp(1rem, 2vw, 2rem);
+  border-top: 1px solid var(--rule);
+  width: min(100%, 44rem);
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+/* `mark` is a global utility, so it has to be escaped out of the module's
+   local scope here or these rules compile to a class nothing carries. */
+.link :global(.mark) {
+  color: var(--stone-500);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.linkValue {
+  font-size: var(--step-0);
+  color: var(--stone-200);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.link:hover :global(.mark) {
+  color: var(--gilt);
+}
+.link:hover .linkValue {
+  color: var(--vellum);
+}
