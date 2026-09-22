@@ -14,7 +14,10 @@ const RESUME_KEY = "resume.pdf";
 
 /**
  * Short TTL with a long stale window: an upload goes live within a minute,
- * and the edge keeps serving the previous copy while it revalidates.
+ * and a browser that already holds a copy paints it immediately and
+ * revalidates behind the paint. This is a client-side policy only. Responses
+ * a Worker generates are not stored in Cloudflare's cache, so every cold
+ * request still reaches R2.
  */
 const CACHE_CONTROL = "public, max-age=60, stale-while-revalidate=600";
 
