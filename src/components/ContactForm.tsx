@@ -356,10 +356,6 @@ export default function ContactForm({ email }: Props) {
             {sent ? (
               <div className={styles.sent}>
                 <p className={styles.sentHead}>Chequered flag.</p>
-                <p className={styles.sentBody}>
-                  It lands in my inbox directly and I answer everything. Thanks
-                  for writing.
-                </p>
               </div>
             ) : (
               <form className={styles.form} onSubmit={submit} noValidate>
