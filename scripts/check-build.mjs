@@ -15,6 +15,11 @@
  * command and never runs `npm run deploy` - and why it is hard only on a
  * deploying build: locally it warns, because building against the test pair is
  * what `npm run worker:dev` is for.
+ *
+ * On a deploy the value comes from a Cloudflare build variable, which is not
+ * visible anywhere in this repository. That is why this reports which source
+ * it resolved and echoes the value: the build log is the only place a human
+ * can see what actually shipped.
  */
 import { loadEnv } from "vite";
 import { resolve, dirname } from "node:path";
@@ -38,14 +43,24 @@ const TEST_SITE_KEYS = new Set([
 const deploying = Boolean(process.env.WORKERS_CI || process.env.CI);
 
 const FIX =
-  "The key belongs in .env.production, which is committed for exactly this\n" +
-  "    reason: a deploy builds from a push, so .env.local cannot carry it.\n" +
-  "    Take the site key from the Cloudflare dashboard > Turnstile > widget.";
+  "Set the build variable VITE_TURNSTILE_SITE_KEY under Workers & Pages >\n" +
+  "    msicard-portfolio > Settings > Build > Variables. No .env file can\n" +
+  "    carry it: they are gitignored, so a deploy built from a push never\n" +
+  "    sees one. Take the value from Cloudflare dashboard > Turnstile >\n" +
+  "    your widget, and copy .env.production.example for local builds.";
 
 /* The same resolution order the build itself uses, so this inspects the value
    that would actually be inlined rather than a guess at it. */
 const env = loadEnv("production", root, "VITE_");
 const key = (env.VITE_TURNSTILE_SITE_KEY ?? "").trim();
+
+/* loadEnv applies .env files first and then overwrites them from process.env,
+   so when both exist the build variable is what ships and the file is inert.
+   Naming the winner is the whole point: the two disagreeing silently is the
+   failure this is here to make impossible. */
+const source = process.env.VITE_TURNSTILE_SITE_KEY
+  ? "build variable (process.env)"
+  : ".env.production";
 
 let problem = null;
 if (!key) {
@@ -58,7 +73,16 @@ if (!key) {
 }
 
 if (!problem) {
-  console.log(`  ok  Turnstile site key ${key.slice(0, 6)}... (not a test key)`);
+  console.log(`  ok  Turnstile site key ${key} from ${source}`);
+  /* A warning, not a failure. Every real key Cloudflare has issued looks like
+     this, but a build is the wrong place to be certain about someone else's
+     format, and a key that is merely unfamiliar should not stop a deploy. */
+  if (!/^0x[A-Za-z0-9_-]{15,}$/.test(key)) {
+    console.warn(
+      `  !  That does not look like a Turnstile site key. Check it is the\n` +
+        `     SITE key and not the secret, which never belongs in a build.`,
+    );
+  }
 } else if (deploying) {
   console.error(`\n  x  ${problem}\n    ${FIX}\n`);
   process.exit(1);

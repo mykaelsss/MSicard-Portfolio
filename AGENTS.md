@@ -54,6 +54,7 @@ index.html               the single document, including the pre-paint motion scr
 vite.config.ts           build config plus dev stubs for /api/content, /api/contact, /resume.pdf
 wrangler.toml            Worker name, assets binding, R2 bucket, contact rate limit
 .dev.vars.example        the secrets the contact endpoint expects locally
+.env.production.example  the build variables a production build expects
 .oxlintrc.json           lint rules
 tsconfig*.json           split projects for app, node tooling and the Worker
 

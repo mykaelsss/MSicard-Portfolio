@@ -65,8 +65,9 @@ Deploys are automatic: Cloudflare Workers Builds is connected to this repository
 Nothing needs to be run by hand, and `npm run deploy` exists only as a manual override for when the build pipeline is not an option.
 
 That has one consequence worth holding on to.
-Anything the build needs has to be carried by the push itself, because a gitignored file on a laptop is not.
-Today that means exactly one thing, `VITE_TURNSTILE_SITE_KEY`, which is why it is committed in `.env.production` rather than configured in a dashboard - see [Configuration](#configuration).
+A deploy builds from a clean checkout on Cloudflare's builder, so it sees no `.env` file of any kind: every one of them is gitignored.
+Anything the build needs has to be a build variable set in the dashboard.
+Today that means exactly one thing, `VITE_TURNSTILE_SITE_KEY` - see [Configuration](#configuration).
 
 First-time setup, which does run locally:
 
@@ -77,7 +78,7 @@ npm run publish:all -- /path/to/resume.pdf
 npx wrangler secret put TURNSTILE_SECRET   # and the other three, see Configuration
 ```
 
-Then connect the repository under **Workers & Pages > msicard-portfolio > Settings > Build**, set the build variable there, and point `msicard.dev` at the Worker.
+Then connect the repository under **Workers & Pages > msicard-portfolio > Settings > Build**, set `VITE_TURNSTILE_SITE_KEY` as a build variable there, and point `msicard.dev` at the Worker.
 
 ## Contact form
 
@@ -111,17 +112,27 @@ npx wrangler secret put CONTACT_FROM       # e.g. Portfolio <contact@msicard.dev
 ```
 
 `CONTACT_FROM` has to be on a domain verified with Resend, or every send is rejected.
+
 The widget's public site key is the fifth piece of configuration, and it behaves unlike the other four.
 It is not a secret and it is not read at runtime: Vite inlines `VITE_TURNSTILE_SITE_KEY` into the bundle at build time, and a Turnstile site key is rendered into the page anyway, where anyone can read it.
-So it is configuration rather than a credential, and it lives in the repository, in `.env.production`.
+So it is configuration rather than a credential, and it is a **build** variable rather than a secret:
 
-That file is committed deliberately.
-Deploys run from a push to `main`, so anything the build needs has to be something a push carries: `.env.local` is gitignored and reaches no deploy, and a build variable set in the Cloudflare dashboard would be invisible in the repository and lost on a fresh clone.
-Vite reads `.env.production` for `vite build` only and never for `vite dev`, which is what keeps a local dev run on the test key with no account needed.
+**Workers & Pages > msicard-portfolio > Settings > Build > Variables**, as `VITE_TURNSTILE_SITE_KEY`.
 
-The secret key of the same widget is the half that must never be committed.
+Note that this is a different screen from the four secrets above, which live under **Settings > Variables and Secrets** and are read at runtime.
+A build variable is available only while the bundle is being built; a secret is available only to the running Worker.
+Putting either in the other's screen silently does nothing.
+
+No `.env` file can carry this to a deploy.
+All of them are gitignored, and a deploy builds from a clean checkout of a push, so it never sees one.
+`.env.production` is for local production builds only; copy `.env.production.example` if you want `npm run build` or `npm run worker:dev` to use the real widget.
+If both a file and a build variable exist, Vite overwrites the file with `process.env`, so the build variable is what ships.
+`npm run build` prints which of the two it resolved, because on a deploy the value is not visible anywhere in this repository.
+
+The secret key of the same widget is the half that must never be in a file at all.
 It is a Worker secret, set the same way as the other three above.
 The pair has to match - the server verifies the token against the secret belonging to the site key that issued it - so replacing the widget means changing both.
+A mismatched pair fails as `bad_captcha`, which reaches the reader as "The check expired"; the Worker logs the real reason, `invalid-input-secret`, to Workers Logs.
 
 Without the variable the build falls back to Cloudflare's test site key, which always issues a token.
 That keeps a local run working with no account, and it cannot open a relay: the Worker fails closed, so if `TURNSTILE_SECRET` or `RESEND_API_KEY` is missing it answers `503 not_configured` rather than waving traffic through.

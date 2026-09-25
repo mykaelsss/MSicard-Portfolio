@@ -27,7 +27,10 @@ dist-ssr
 .wrangler/
 .dev.vars
 
-# Local env
+# Local env. Every .env file is ignored, including .env.production: the value
+# that reaches a deploy comes from the Cloudflare build variables, not from a
+# file, so a committed file could only ever disagree with it. The .example
+# files are the tracked record of what each one has to contain.
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.*.example
