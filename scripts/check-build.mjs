@@ -10,11 +10,11 @@
  * will verify.
  *
  * Deploys run from a push to main, so the build that matters happens on
- * Cloudflare's builder rather than here, and `.env.local` is gitignored and
- * never reaches it - the key has to be set as a build variable on the Worker.
- * That is why this check lives inside `npm run build` instead of a deploy
- * script, and why it is hard only on a deploying build: locally it warns,
- * because building against the test pair is what `npm run worker:dev` is for.
+ * Cloudflare's builder rather than here. That is why this check lives inside
+ * `npm run build` instead of a deploy script - the builder runs the build
+ * command and never runs `npm run deploy` - and why it is hard only on a
+ * deploying build: locally it warns, because building against the test pair is
+ * what `npm run worker:dev` is for.
  */
 import { loadEnv } from "vite";
 import { resolve, dirname } from "node:path";
@@ -38,9 +38,9 @@ const TEST_SITE_KEYS = new Set([
 const deploying = Boolean(process.env.WORKERS_CI || process.env.CI);
 
 const FIX =
-  "Set it as a build variable on the Worker (Cloudflare dashboard >\n" +
-  "    Workers & Pages > msicard-portfolio > Settings > Build), not in\n" +
-  "    .env.local - that file is gitignored and the builder never sees it.";
+  "The key belongs in .env.production, which is committed for exactly this\n" +
+  "    reason: a deploy builds from a push, so .env.local cannot carry it.\n" +
+  "    Take the site key from the Cloudflare dashboard > Turnstile > widget.";
 
 /* The same resolution order the build itself uses, so this inspects the value
    that would actually be inlined rather than a guess at it. */

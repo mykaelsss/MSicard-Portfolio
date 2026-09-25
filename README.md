@@ -65,8 +65,8 @@ Deploys are automatic: Cloudflare Workers Builds is connected to this repository
 Nothing needs to be run by hand, and `npm run deploy` exists only as a manual override for when the build pipeline is not an option.
 
 That has one consequence worth holding on to.
-Anything the build needs has to exist on Cloudflare's builder, because a gitignored file on a laptop is not part of a push.
-Today that means exactly one thing, `VITE_TURNSTILE_SITE_KEY`, set as a build variable and covered under [Configuration](#configuration).
+Anything the build needs has to be carried by the push itself, because a gitignored file on a laptop is not.
+Today that means exactly one thing, `VITE_TURNSTILE_SITE_KEY`, which is why it is committed in `.env.production` rather than configured in a dashboard - see [Configuration](#configuration).
 
 First-time setup, which does run locally:
 
@@ -112,16 +112,16 @@ npx wrangler secret put CONTACT_FROM       # e.g. Portfolio <contact@msicard.dev
 
 `CONTACT_FROM` has to be on a domain verified with Resend, or every send is rejected.
 The widget's public site key is the fifth piece of configuration, and it behaves unlike the other four.
-It is not a secret and it is not read at runtime: Vite inlines `VITE_TURNSTILE_SITE_KEY` into the bundle at build time.
-So it has to be set wherever the build runs, which for a deploy is Cloudflare's builder, not a laptop:
+It is not a secret and it is not read at runtime: Vite inlines `VITE_TURNSTILE_SITE_KEY` into the bundle at build time, and a Turnstile site key is rendered into the page anyway, where anyone can read it.
+So it is configuration rather than a credential, and it lives in the repository, in `.env.production`.
 
-**Cloudflare dashboard > Workers & Pages > msicard-portfolio > Settings > Build**, as a build variable.
+That file is committed deliberately.
+Deploys run from a push to `main`, so anything the build needs has to be something a push carries: `.env.local` is gitignored and reaches no deploy, and a build variable set in the Cloudflare dashboard would be invisible in the repository and lost on a fresh clone.
+Vite reads `.env.production` for `vite build` only and never for `vite dev`, which is what keeps a local dev run on the test key with no account needed.
 
-For a local build, `.env.local` does the same job - but that file is gitignored, so it reaches no deploy:
-
-```bash
-echo 'VITE_TURNSTILE_SITE_KEY="0x..."' >> .env.local
-```
+The secret key of the same widget is the half that must never be committed.
+It is a Worker secret, set the same way as the other three above.
+The pair has to match - the server verifies the token against the secret belonging to the site key that issued it - so replacing the widget means changing both.
 
 Without the variable the build falls back to Cloudflare's test site key, which always issues a token.
 That keeps a local run working with no account, and it cannot open a relay: the Worker fails closed, so if `TURNSTILE_SECRET` or `RESEND_API_KEY` is missing it answers `503 not_configured` rather than waving traffic through.
