@@ -105,12 +105,22 @@ function escapeHtml(value: string): string {
 interface TurnstileResult {
   success: boolean;
   "error-codes"?: string[];
+  /** The action the widget was rendered with, echoed back by Cloudflare. */
+  action?: string;
+  /** The hostname the challenge was actually solved on. */
+  hostname?: string;
 }
+
+/* The value ContactForm renders the widget with. Cloudflare echoes it back on
+   a successful verify, so checking it here is what stops a token minted by
+   this same site key on some other surface being spent on this endpoint. */
+const EXPECTED_ACTION = "contact";
 
 async function verifyTurnstile(
   secret: string,
   token: string,
   ip: string | null,
+  expectedHostname: string,
 ): Promise<boolean> {
   const form = new FormData();
   form.append("secret", secret);
@@ -125,9 +135,39 @@ async function verifyTurnstile(
       "https://challenges.cloudflare.com/turnstile/v0/siteverify",
       { method: "POST", body: form },
     );
-    if (!res.ok) return false;
+    if (!res.ok) {
+      console.warn(`turnstile: siteverify HTTP ${res.status}`);
+      return false;
+    }
     const data = (await res.json()) as TurnstileResult;
-    return data.success === true;
+
+    if (data.success !== true) {
+      /* Cloudflare names the cause here and nowhere else, and none of these
+         codes is sensitive: `invalid-input-secret` means the secret does not
+         belong to the site key that issued the token, `invalid-input-response`
+         means the token itself was bad, `timeout-or-duplicate` means it was
+         already spent. Without this line every one of them reaches the reader
+         as the same "check expired" and has to be guessed at from outside. */
+      console.warn(
+        `turnstile: rejected [${(data["error-codes"] ?? ["no-codes"]).join(", ")}]`,
+      );
+      return false;
+    }
+
+    /* A token is only proof of a challenge solved somewhere, for something.
+       These two turn it into proof of this challenge, on this host. */
+    if (data.action !== EXPECTED_ACTION) {
+      console.warn(`turnstile: action mismatch (got ${data.action ?? "none"})`);
+      return false;
+    }
+    if (data.hostname !== expectedHostname) {
+      console.warn(
+        `turnstile: hostname mismatch (got ${data.hostname ?? "none"}, want ${expectedHostname})`,
+      );
+      return false;
+    }
+
+    return true;
   } catch {
     /* Fail closed. An unreachable verifier is a reason to send nothing, not a
        reason to trust the submission. */
@@ -248,7 +288,11 @@ export async function handleContact(
 
   const ip = request.headers.get("CF-Connecting-IP");
 
-  if (!(await verifyTurnstile(env.TURNSTILE_SECRET, token, ip))) {
+  /* Taken from the request rather than from a list, so the allowlist is the
+     host this Worker was actually reached on. That excludes localhost in
+     production by construction, and still lets `npm run worker:dev` verify
+     against localhost without a second code path. */
+  if (!(await verifyTurnstile(env.TURNSTILE_SECRET, token, ip, url.hostname))) {
     return fail(403, "bad_captcha", "captcha");
   }
 
