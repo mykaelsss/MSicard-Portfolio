@@ -59,16 +59,25 @@ No build, no deploy, no downtime.
 If R2 is unreachable, the object is missing, or the JSON is malformed, the Worker serves the copy of `content.json` that was bundled at build time and falls through to the `public/resume.pdf` shipped with the deploy.
 The site cannot be broken by a bad upload.
 
-## First-time deploy
+## Deploying
+
+Deploys are automatic: Cloudflare Workers Builds is connected to this repository and builds and deploys on every push to `main`.
+Nothing needs to be run by hand, and `npm run deploy` exists only as a manual override for when the build pipeline is not an option.
+
+That has one consequence worth holding on to.
+Anything the build needs has to exist on Cloudflare's builder, because a gitignored file on a laptop is not part of a push.
+Today that means exactly one thing, `VITE_TURNSTILE_SITE_KEY`, set as a build variable and covered under [Configuration](#configuration).
+
+First-time setup, which does run locally:
 
 ```bash
 npx wrangler login
 npm run r2:init          # create the bucket
 npm run publish:all -- /path/to/resume.pdf
-npm run deploy
+npx wrangler secret put TURNSTILE_SECRET   # and the other three, see Configuration
 ```
 
-Then point `msicard.dev` at the Worker in the Cloudflare dashboard.
+Then connect the repository under **Workers & Pages > msicard-portfolio > Settings > Build**, set the build variable there, and point `msicard.dev` at the Worker.
 
 ## Contact form
 
@@ -102,14 +111,27 @@ npx wrangler secret put CONTACT_FROM       # e.g. Portfolio <contact@msicard.dev
 ```
 
 `CONTACT_FROM` has to be on a domain verified with Resend, or every send is rejected.
-The widget's public site key is a build-time variable, not a secret:
+The widget's public site key is the fifth piece of configuration, and it behaves unlike the other four.
+It is not a secret and it is not read at runtime: Vite inlines `VITE_TURNSTILE_SITE_KEY` into the bundle at build time.
+So it has to be set wherever the build runs, which for a deploy is Cloudflare's builder, not a laptop:
+
+**Cloudflare dashboard > Workers & Pages > msicard-portfolio > Settings > Build**, as a build variable.
+
+For a local build, `.env.local` does the same job - but that file is gitignored, so it reaches no deploy:
 
 ```bash
 echo 'VITE_TURNSTILE_SITE_KEY="0x..."' >> .env.local
 ```
 
-Without it the build falls back to Cloudflare's test site key, which always issues a token.
-That is safe, because the Worker fails closed: if `TURNSTILE_SECRET` or `RESEND_API_KEY` is missing it answers `503 not_configured` rather than waving traffic through, so a half-configured deploy has a dark form rather than an open relay.
+Without the variable the build falls back to Cloudflare's test site key, which always issues a token.
+That keeps a local run working with no account, and it cannot open a relay: the Worker fails closed, so if `TURNSTILE_SECRET` or `RESEND_API_KEY` is missing it answers `503 not_configured` rather than waving traffic through.
+
+It must never reach production, though.
+Cloudflare renders a "testing only, contact the site owner" banner on a test widget, and its tokens do not verify against a real secret, so a live form built without the key is both visibly wrong and unable to deliver.
+Because the key is inlined, nothing at runtime can notice the substitution and no amount of defensive code in the Worker can catch it - the only place it can still be caught is the build.
+`npm run build` therefore runs `scripts/check-build.mjs` first.
+On a deploying build - anything with `WORKERS_CI` or `CI` set, which covers Cloudflare Workers Builds - a missing key or one of Cloudflare's five published test keys fails the build.
+Locally it only warns, because running the real Worker against the test pair is exactly what `npm run worker:dev` is for.
 
 Locally, `npm run dev` stubs the endpoint entirely and prints submissions to the terminal, so a local run can never put mail in a real inbox.
 To exercise the real Worker instead, copy `.dev.vars.example` to `.dev.vars` and run `npm run worker:dev`.
