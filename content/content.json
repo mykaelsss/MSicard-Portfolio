@@ -25,7 +25,7 @@
       "url": "https://msicard.dev/"
     }
   },
-  "summary": "Hi, I'm Mykael, a full-stack developer in New York City with 2+ years shipping production features across TypeScript, React, Next.js, Python, and PostgreSQL. At a social content platform I owned a compliance system end to end, from schema design to REST APIs and an admin dashboard, and built a monetized messaging system and a tiered subscription architecture. I'm AWS Certified Cloud Practitioner and Microsoft Certified in Azure AI, and I build my own projects end to end too, including Formalytx, an F1 telemetry dashboard built with Next.js and FastAPI. I'm currently looking for my next full-stack or backend role, and outside of work I game and stay active in the gym.",
+  "summary": "Hi, I'm Mykael, a full-stack developer in New York City with 2+ years shipping production features across TypeScript, React, Next.js, Python, and PostgreSQL. At a social content platform I owned a compliance system end to end, from schema design to APIs and an admin dashboard, rebuilt video encoding as a BullMQ/Redis job pipeline, and extended Stream Chat with custom monetization. I'm AWS Certified Cloud Practitioner and Microsoft Certified in Azure AI, and I build my own projects end to end too, including Formalytx, an F1 telemetry explorer built with Next.js, FastAPI, and Cloudflare R2. I'm currently studying computer science at BMCC and looking for my next full-stack or backend role, and outside of work I game and stay active in the gym.",
   "links": [
     {
       "id": "email",
@@ -58,15 +58,14 @@
       "current": false,
       "period": "June 2026 - August 2026",
       "bullets": [
-        "Acted as project manager for 3 student teams (3-5 members each) through 3-week capstones, assigning tickets and tracking progress, while running standups across all student teams to surface blockers, delivering 100% on-time completion across all led teams.",
-        "Resolved technical issues for a cohort of 28 students across macOS, Windows, WSL, and native Linux, including development environment setup, shell/bash configuration (PATH, aliases, dotfiles), Git/GitHub workflow debugging, and local server troubleshooting, ensuring no student was blocked from completing coursework due to environment issues.",
-        "Diagnosed a cross-environment connectivity issue between Windows-hosted PostgreSQL and WSL-based applications, resolving it by reconfiguring listener bindings and host-based authentication rules, then resolved the issue one-on-one for every affected student and documented the fix in a reusable guide."
+        "Diagnosed a connectivity failure between Windows-hosted PostgreSQL and WSL-based applications by reconfiguring listener bindings and host-based authentication rules; resolved it one-on-one for 4 affected students and documented the fix in a setup guide that preempted an estimated 19 more.",
+        "Led 3 student teams (3-5 members each) through 3-week capstones, assigning tickets and tracking progress in GitHub Projects; ran standups with all 7 teams to surface blockers, with all 3 led teams delivering on time."
       ]
     },
     {
       "id": "platform",
       "role": "Full-Stack Developer",
-      "org": "Social Content Platform",
+      "org": "Early-Stage Social Content Platform",
       "orgNote": "Confidential",
       "location": null,
       "start": "2024-04",
@@ -74,10 +73,10 @@
       "current": false,
       "period": "April 2024 - January 2026",
       "bullets": [
-        "Owned compliance system end-to-end: age verification, content policy enforcement, PostgreSQL schema design, live data migrations, REST APIs, and an admin dashboard to meet regulatory requirements.",
-        "Architected a tiered subscription system expanding creators from one to 5 priced tiers for a stealth startup in scoped launch, enabling content segmentation across audience budgets.",
-        "Integrated Stream Chat SDK and built a monetized messaging UI enabling dynamic per-user messaging rates and per-media pricing, extending revenue beyond the SDK's native capabilities.",
-        "Migrated the platform from Plyr.js to Video.js, resolving HLS playback failures affecting ~35% of videos and eliminating a critical seek bug that crashed the site under rapid input."
+        "Rebuilt video encoding as a BullMQ/Redis job pipeline with bounded concurrency and retries, taking 10 simultaneous uploads from 5 completed to 10 and cutting worst API latency from 1.8s to 47ms in benchmarks.",
+        "Built the platform's compliance system end-to-end (age verification, review queue, appeals, admin dashboard) to meet regulatory requirements, owning the PostgreSQL schema, Encore.dev review APIs, and admin UI; restricted search so only approved content reached users.",
+        "Extended the Stream Chat SDK with custom monetization (per-user message rates, per-media pricing) and cut connection handshakes ~92% (12 to 1 per session) by moving to a single app-level client gated on account status.",
+        "Replaced the Plyr/hls.js player with a shared Video.js component across 6 video surfaces, fixing a background-download leak and an early-click race while cutting first-load JS by 8.7%."
       ]
     }
   ],
@@ -90,22 +89,49 @@
       "summary": "An F1 telemetry explorer - browse seasons, sessions, and driver laps, and visualize raw car telemetry.",
       "overview": [
         "Formalytx is a Formula 1 telemetry explorer that lets users navigate F1 seasons, events, and sessions - then dive into driver laps and raw car telemetry, all in one place. Pick a year and event, choose a session, select drivers to compare, and plot lap times and telemetry channels like speed, throttle, and brake.",
-        "The frontend is built with Next.js (App Router), React, and TypeScript, styled with Tailwind CSS and shadcn/ui, with ECharts powering the interactive telemetry visualizations and TanStack Query handling data fetching and caching. The backend is a FastAPI service written in Python, sourcing data through the open-source FastF1 library, all containerized with Docker and served behind an nginx reverse proxy.",
-        "As the sole developer, I designed and built the entire stack - from the REST API endpoints serving season schedules, session results, and lap telemetry, to the charting interface that renders thousands of telemetry data points smoothly. This project pushed me to coordinate a multi-service architecture and deliver a fast, polished experience on top of large, real-world datasets.",
+        "The frontend is built with Next.js 16 (App Router), React 19, and TypeScript, styled with Tailwind CSS and shadcn/ui, with ECharts powering the interactive telemetry visualizations and TanStack Query handling data fetching and caching. The backend is a FastAPI service written in Python exposing 9 typed REST endpoints, with the frontend on Vercel and the API on Railway.",
+        "Loading sessions on demand through FastF1 was too slow for real users, so I replaced it with a per-lap archive in Cloudflare R2 covering 961 sessions, 538k laps, and 5.3 GB. Real-user p95 latency on uncached requests fell from 11.8s to 0.68s and gateway timeouts disappeared. A Railway cron job keeps the archive current, exporting each session to R2 within 15 minutes of it ending and re-checking for 2 days to catch steward penalties, writing only the objects that changed.",
+        "As the sole developer, I design, build, and operate the entire stack. When requests started stalling for 30 seconds, I traced it through Railway flow logs to idle R2 connections being dropped in transit, and fixed it with TCP keepalive on the boto3 connection pool, cutting p99 latency from 31s to 0.86s. The explorer now serves around 120 unique visitors a month.",
         "As a Formula 1 fan, this project was a true passion build. Combining my love for the sport with full-stack engineering made every part of the process rewarding, and seeing real race data come to life in the explorer is something I'm genuinely proud of."
       ],
       "stack": [
         "Next.js",
         "React 19",
+        "TypeScript",
         "FastAPI",
         "Python",
-        "Cloudflare",
+        "Cloudflare R2",
         "Vercel",
         "Railway"
       ],
       "links": {
         "site": "https://formalytx.com",
         "github": "https://github.com/mykaelsss/formalytx"
+      }
+    },
+    {
+      "id": "buddy-walk",
+      "name": "Buddy Walk",
+      "tagline": "Assistive Navigation Research",
+      "year": "2026",
+      "summary": "A trial-evaluation dashboard for an assistive navigation app for blind and low-vision travelers.",
+      "overview": [
+        "Buddy Walk is an assistive navigation app for blind and low-vision travelers, a React Native (Expo) client backed by a Node.js and Express API, developed by a research team at the Borough of Manhattan Community College. I joined as a CSTEP Research Scholar in Fall 2026 to build the tooling the team uses to evaluate its last-meters guidance in the field.",
+        "I built a trial-evaluation dashboard, served by the Express API and backed by MongoDB, that shows GPS accuracy, the resolved destination, the Street View panorama, and the outcome for every field test, with filters so the team can compare localization methods side by side.",
+        "I also implemented a retry workflow that reruns past test trials through the OpenAI and Street View pipeline, up to 3 at once, with UUIDv7 idempotency keys, lease renewal, and an admin-token gate. Retries are excluded from the evaluation sample, so rerunning a trial never skews the results the team is measuring."
+      ],
+      "stack": [
+        "TypeScript",
+        "Node.js",
+        "Express",
+        "MongoDB",
+        "OpenAI API",
+        "Google Street View",
+        "Docker",
+        "Render"
+      ],
+      "links": {
+        "github": "https://github.com/Buddy-Walk/buddy-walk"
       }
     }
   ],
@@ -133,6 +159,14 @@
           "note": "Services and data work. The language I reach for when the shape of the problem is still moving."
         },
         {
+          "name": "SQL",
+          "since": 2022
+        },
+        {
+          "name": "C++",
+          "since": 2026
+        },
+        {
           "name": "Java",
           "since": 2022
         },
@@ -155,21 +189,21 @@
           "note": "Server components first. Client state only where a user can change it."
         },
         {
+          "name": "React Native",
+          "since": 2026
+        },
+        {
           "name": "Next.js",
           "since": 2024,
           "note": "App router in production since 2024."
         },
         {
-          "name": "tRPC",
-          "since": 2025
+          "name": "Tailwind CSS",
+          "since": 2024
         },
         {
           "name": "React Query (TanStack Query)",
           "since": 2025
-        },
-        {
-          "name": "Tailwind CSS",
-          "since": 2024
         },
         {
           "name": "Material UI",
@@ -198,31 +232,35 @@
           "note": "Pydantic models as the contract between the service and its callers."
         },
         {
-          "name": "Flask",
-          "since": 2023
-        },
-        {
           "name": "Encore",
           "since": 2026
+        },
+        {
+          "name": "Prisma",
+          "since": 2024
+        },
+        {
+          "name": "tRPC",
+          "since": 2025
         },
         {
           "name": "REST APIs",
           "since": 2023,
           "note": "Owned end to end on two production platforms."
+        },
+        {
+          "name": "Flask",
+          "since": 2023
         }
       ]
     },
     {
-      "group": "Data",
+      "group": "Databases & Queues",
       "items": [
         {
           "name": "PostgreSQL",
           "since": 2024,
           "note": "Schema design and query tuning, not just an ORM target."
-        },
-        {
-          "name": "Prisma",
-          "since": 2024
         },
         {
           "name": "MySQL",
@@ -235,15 +273,27 @@
         {
           "name": "Redis",
           "since": 2025
+        },
+        {
+          "name": "BullMQ",
+          "since": 2025
         }
       ]
     },
     {
-      "group": "Tools & DevOps",
+      "group": "Cloud & DevOps",
       "items": [
         {
-          "name": "Git/GitHub",
-          "since": 2022
+          "name": "AWS (EC2, S3, Lambda)",
+          "since": 2026
+        },
+        {
+          "name": "Azure",
+          "since": 2026
+        },
+        {
+          "name": "Cloudflare R2",
+          "since": 2026
         },
         {
           "name": "Docker",
@@ -251,7 +301,19 @@
           "note": "Parity between my machine and the one that runs it."
         },
         {
-          "name": "AWS (EC2, S3, Lambda)",
+          "name": "Vercel",
+          "since": 2026
+        },
+        {
+          "name": "Railway",
+          "since": 2026
+        },
+        {
+          "name": "Git/GitHub",
+          "since": 2022
+        },
+        {
+          "name": "Linux/WSL",
           "since": 2026
         }
       ]
